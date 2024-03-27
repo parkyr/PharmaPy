@@ -342,22 +342,23 @@ class SimulationExec:
 
     def GetCAPEX(self, size_equipment=None, k_vals=None, b_vals=None,
                  cepci_vals=None, f_pres=None, f_mat=None, min_capacity=None):
-
+        
         if size_equipment is None:
+            # if equipment size is not provided, retrieve from the simulation data
             size_equipment = self.get_equipment_size()
 
         num_equip = len(size_equipment)
         name_equip = size_equipment.keys()
-        if cepci_vals is None:
+        if cepci_vals is None: # cepci stands for Chemical Engineering Plant Cost Index
             cepci_vals = np.ones(2)
 
-        if f_pres is None:
+        if f_pres is None: # f_pres stands for pressure factor in CAPEX calculations
             f_pres = np.ones(num_equip)
 
-        if f_mat is None:
+        if f_mat is None: # f_mat stands for material factor in CAPEX calculations
             f_mat = np.ones(num_equip)
 
-        if k_vals is None:
+        if k_vals is None: # k_vals stands for k1, k2, k3 in CAPEX calculations
             return size_equipment
         else:
             capacities = np.array(list(size_equipment.values()))
@@ -366,12 +367,13 @@ class SimulationExec:
                 a_corr = capacities
             else:
                 a_corr = np.maximum(min_capacity, capacities)
-
+            # CAPEX calculated by the bare module method 
             k1, k2, k3 = k_vals.T
             cost_zero = 10**(k1 + k2*np.log10(a_corr) + k3*np.log10(a_corr)**2)
 
             b1, b2 = b_vals.T
 
+            # bare cost is corrected with material and pressure conditions 
             f_bare = b1 + b2 * f_mat * f_pres
             cost_equip = cost_zero * f_bare
 
