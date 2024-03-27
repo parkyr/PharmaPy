@@ -2,7 +2,9 @@
 """
 Created on Mon Jan 13 12:44:44 2020
 
-@author: dcasasor
+This module contains the SimulationExec class which is responsible for
+executing the simulation of a flowsheet in the PharmaPy package.
+
 """
 
 import numpy as np
@@ -22,7 +24,61 @@ import time
 
 
 class SimulationExec:
+    """
+    The SimulationExec class is responsible for executing the simulation of a
+    flowsheet in the PharmaPy package.
+
+    Parameters
+    ----------
+    pure_path : str
+        The path to the pure component database.
+    flowsheet : dict or str
+        The flowsheet to be simulated. It can be provided as a dictionary or as
+        a string representation of the flowsheet.
+
+    Attributes
+    ----------
+    NamesSpecies : list
+        The names of the species in the flowsheet.
+    StreamTable : pandas.DataFrame
+        The table containing the stream data.
+    uos_instances : dict
+        The instances of the unit operations in the flowsheet.
+    oper_mode : list
+        The operating modes of the unit operations.
+    graph : dict
+        The graph representation of the flowsheet.
+    in_degree : dict
+        The in-degree of each unit operation in the flowsheet.
+    execution_names : list
+        The names of the unit operations in the order of execution.
+    time_processing : dict
+        The processing time of each unit operation.
+    result : SimulationResult
+        The result of the simulation.
+    connections : dict
+        The connections between unit operations.
+
+    """
+
     def __init__(self, pure_path, flowsheet):
+        """
+        Initialize the SimulationExec object.
+
+        Parameters
+        ----------
+        pure_path : str
+            The path to the pure component database.
+        flowsheet : dict or str
+            The flowsheet to be simulated. It can be provided as a dictionary or as
+            a string representation of the flowsheet.
+
+        Raises
+        ------
+        PharmaPyNonImplementedError
+            If the provided flowsheet contains recycle stream(s).
+
+        """
 
         # Interfaces
         thermo_instance = ThermoPhysicalManager(pure_path)
@@ -48,6 +104,30 @@ class SimulationExec:
 
     def SolveFlowsheet(self, kwargs_run=None, pick_units=None, verbose=True,
                        steady_state_di=None, tolerances_ss=None, ss_time=0):
+        """
+        Solve the flowsheet simulation.
+
+        Parameters
+        ----------
+        kwargs_run : dict, optional
+            Additional keyword arguments for running the unit operations.
+        pick_units : list, optional
+            The list of unit operations to be solved. If not provided, all unit
+            operations in the flowsheet will be solved.
+        verbose : bool, optional
+            Whether to print verbose output during the simulation. The default is True.
+        steady_state_di : dict, optional
+            The dictionary containing steady state information for each unit operation.
+        tolerances_ss : dict, optional
+            The dictionary containing tolerances for steady state convergence.
+        ss_time : float, optional
+            The steady state time.
+
+        Returns
+        -------
+        None
+
+        """
 
         if kwargs_run is None:
             kwargs_run = {}
@@ -171,7 +251,7 @@ class SimulationExec:
                            pick_unit=None, **inputs_paramest):
         """
         Set parameter estimation using the aggregated unit operation to a
-        simulation object
+        simulation object.
 
         Parameters
         ----------
@@ -208,7 +288,8 @@ class SimulationExec:
         control_modifiers : dict, optional
             Dictionary containing arguments to be passed to a control function.
             For instance, for a crystallizer with a temperature control with
-            signature my_control(time, temp_init, ramp):
+                   # instance is already solved, pass data to connection
+     signature my_control(time, temp_init, ramp):
 
                 my_modifier = {'temp': {'args': (320, -0.2)}}
 
@@ -327,7 +408,7 @@ class SimulationExec:
 
     def get_equipment_size(self):
         size_equipment = {}
-
+        
         for key, instance in self.uos_instances.items():
             if hasattr(instance, 'vol_tot'):
                 size_equipment[key] = instance.vol_tot
@@ -361,6 +442,8 @@ class SimulationExec:
         if k_vals is None: # k_vals stands for k1, k2, k3 in CAPEX calculations
             return size_equipment
         else:
+            print("size_equipment")
+            print(size_equipment)
             capacities = np.array(list(size_equipment.values()))
 
             if min_capacity is None:
