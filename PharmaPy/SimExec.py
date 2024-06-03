@@ -394,6 +394,25 @@ class SimulationExec:
 
     def EstimateParams(self, optim_options=None, method='LM', bounds=None,
                        verbose=True):
+        '''
+        Estimate parameters using the parameter estimation object.
+
+        Parameters
+        ----------
+        optim_options : dict, optional
+            Optimization options. The default is None.
+        method : str, optional
+            Optimization method. The default is 'LM'.
+        bounds : list, optional
+            Bounds for the optimization. The default is None.
+        verbose : bool, optional
+            Whether to print verbose output during the optimization. The default is True.
+
+        Returns
+        -------
+        results : dict
+            The results of the optimization.   
+        '''
         tic = time.time()
         results = self.ParamInst.optimize_fn(optim_options=optim_options,
                                              method=method,
@@ -407,6 +426,14 @@ class SimulationExec:
         return results
 
     def get_equipment_size(self):
+        '''
+        Function to retrieve the size of the equipment from the simulation data.
+
+        Returns
+        -------
+        size_equipment : dict
+            The size of the equipment in the flowsheet.
+        '''
         size_equipment = {}
         
         for key, instance in self.uos_instances.items():
@@ -423,6 +450,31 @@ class SimulationExec:
 
     def GetCAPEX(self, size_equipment=None, k_vals=None, b_vals=None,
                  cepci_vals=None, f_pres=None, f_mat=None, min_capacity=None):
+        '''
+        Function to calculate the CAPEX of the equipment in the flowsheet.
+
+        Parameters
+        ----------
+        size_equipment : dict, optional
+            The size of the equipment in the flowsheet. The default is None.
+        k_vals : numpy array, optional
+            The k values for the CAPEX calculation. The default is None.
+        b_vals : numpy array, optional
+            The b values for the CAPEX calculation. The default is None.
+        cepci_vals : numpy array, optional
+            The CEPCI (Chemical Engineering Plant Cost Index) values for the CAPEX calculation. The default is None.
+        f_pres : numpy array, optional
+            The pressure factor for the CAPEX calculation. The default is None.
+        f_mat : numpy array, optional
+            The material factor for the CAPEX calculation. The default is None.
+        min_capacity : numpy array, optional
+            The minimum capacity for the CAPEX calculation. The default is None.
+
+        Returns
+        -------
+        cost_equip : dict
+            The CAPEX of the equipment in the flowsheet.
+        '''
         
         if size_equipment is None:
             # if equipment size is not provided, retrieve from the simulation data
