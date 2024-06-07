@@ -103,11 +103,11 @@ def pprint(di, name_items, fields, str_out=True):
 
     items = list(di.keys())
 
-    # ---------- Lenghts
-    # Lenght of first column
+    # ---------- Lengths
+    # Length of first column
     max_lens = {name_items: max([len(name) for name in items])}
 
-    # Lenght of remaining columns
+    # Length of remaining columns
     for field in fields:
         field_vals = [di[name].get(field, '') for name in items]
 
