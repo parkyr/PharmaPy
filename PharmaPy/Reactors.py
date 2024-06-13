@@ -125,10 +125,10 @@ class _BaseReactor:
         f(time) = state_value
     return_sens : bool (optional, default = True)
         whether or not the paramest_wrapper method should return
-        the sensitivity system along with the concentratio profiles.
+        the sensitivity system along with the concentration profiles.
         Use False if you want the parameter estimation platform to
         estimate the sensitivity system using finite differences
-    state_events : lsit of dict(s)
+    state_events : list of dict(s)
         list of dictionaries, each one containing the specification of a
         state event
     """
@@ -506,7 +506,7 @@ class _BaseReactor:
             can be either the name of a species (str) or the index of the
             species (int). The default is None.
         **fig_kwargs : keyword arguments to plt.subplots()
-            named arguments passed to the plotting functions. A yypical field
+            named arguments passed to the plotting functions. A typical field
             is 'figsize', passed as a (width, height) tuple.
 
         Returns
@@ -605,7 +605,7 @@ class BatchReactor(_BaseReactor):
         'coil', 'bath']
     return_sens : bool (optional, default = True)
         whether or not the paramest_wrapper method should return
-        the sensitivity system along with the concentratio profiles.
+        the sensitivity system along with the concentration profiles.
         Use False if you want the parameter estimation platform to
         estimate the sensitivity system using finite differences
     """
@@ -945,7 +945,7 @@ class CSTR(_BaseReactor):
         'coil', 'bath']
     return_sens : bool (optional, default = True)
         whether or not the paramest_wrapper method should return
-        the sensitivity system along with the concentratio profiles.
+        the sensitivity system along with the concentration profiles.
         Use False if you want the parameter estimation platform to
         estimate the sensitivity system using finite differences
     """
@@ -1248,7 +1248,7 @@ class SemibatchReactor(CSTR):
         'coil', 'bath']
     return_sens : bool (optional, default = True)
         whether or not the paramest_wrapper method should return
-        the sensitivity system along with the concentratio profiles.
+        the sensitivity system along with the concentration profiles.
         Use False if you want the parameter estimation platform to
         estimate the sensitivity system using finite differences
     """
@@ -1448,7 +1448,7 @@ class PlugFlowReactor(_BaseReactor):
         'coil', 'bath']
     return_sens : bool (optional, default = True)
         whether or not the paramest_wrapper method should return
-        the sensitivity system along with the concentratio profiles.
+        the sensitivity system along with the concentration profiles.
         Use False if you want the parameter estimation platform to
         estimate the sensitivity system using finite differences
     """
@@ -1926,7 +1926,7 @@ class PlugFlowReactor(_BaseReactor):
     def plot_steady(self, fig_size=None, title=None):
         fig, axes = plt.subplots(1, 2, figsize=fig_size)
 
-        # Concentration
+        # Concentrationn
         axes[0].plot(self.volPosition, self.concProfSteady)
         axes[0].set_ylabel('$C_j$ (mol/L)')
         axes[0].legend(self.name_species)
