@@ -494,8 +494,6 @@ class SimulationExec:
         if k_vals is None: # k_vals stands for k1, k2, k3 in CAPEX calculations
             return size_equipment
         else:
-            print("size_equipment")
-            print(size_equipment)
             capacities = np.array(list(size_equipment.values()))
 
             if min_capacity is None:
@@ -621,6 +619,8 @@ class SimulationExec:
 
                 dens = stream.getDensity(basis=basis)
 
+                total = 0
+
                 if uo.oper_mode == 'Batch':
                     if basis == 'mass':
                         total = stream.mass
@@ -686,6 +686,7 @@ class SimulationExec:
 
     def get_holdup(self, uo, basis='mass'):
         out = {}
+        fields = []
 
         if hasattr(uo, '__original_phase__'):
             phases = uo.__original_phase__
@@ -799,8 +800,13 @@ class SimulationExec:
                 heat_duties.append(instance.heat_duty)
                 equipment_ids.append(key)
 
-        heat_duties = np.array(heat_duties)
-        heat_duties = pd.DataFrame(heat_duties, index=equipment_ids,
+        # heat_duties = np.array(heat_duties)
+        if heat_duties:
+            heat_duties = np.array(heat_duties)
+            heat_duties_df = pd.DataFrame(heat_duties, index=equipment_ids, columns=['heating', 'cooling'])
+        else:
+            heat_duties_df = pd.DataFrame(columns=['heating', 'cooling'])
+            heat_duties = pd.DataFrame(heat_duties, index=equipment_ids,
                                    columns=['heating', 'cooling'])
 
         duties_ids = np.array(duty_ids)
@@ -834,14 +840,22 @@ class SimulationExec:
         duty_unit_cost = np.zeros_like(map_duties, dtype=np.float64)
         for ind, row in enumerate(map_duties):
             duty_unit_cost[ind] = heat_exchange_cost[row]
-
-        duty_cost = np.abs(duties)*1e-9 * duty_unit_cost
+          
+        # duty_cost = np.abs(duties)*1e-9 * duty_unit_cost
+        if duties.size > 0:
+            duty_cost = np.abs(duties) * 1e-9 * duty_unit_cost
+        else:  
+            duty_cost = np.array([]) 
 
         # ---------- Raw materials
         raw_materials = self.GetRawMaterials(
             include_holdups, steady_raw, **kwargs_items.get('raw_materials',
                                                             {}))
-        raw_cost = cost_raw * raw_materials
+        selected_cols = raw_materials.columns[6:] 
+        if raw_materials.size > 0:
+            raw_cost = cost_raw * raw_materials[selected_cols]
+        else:  
+            raw_cost = pd.DataFrame(columns=selected_cols)
 
         # ---------- Labor
         labor_cost = self.GetLabor(**kwargs_items.get('labor', {}))
