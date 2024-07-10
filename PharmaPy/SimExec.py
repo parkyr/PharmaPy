@@ -848,10 +848,13 @@ class SimulationExec:
             duty_cost = np.array([]) 
 
         # ---------- Raw materials
-        raw_materials = self.GetRawMaterials(
-            include_holdups, steady_raw, **kwargs_items.get('raw_materials',
-                                                            {}))
-        selected_cols = raw_materials.columns[6:] 
+        raw_materials = self.GetRawMaterials(basis = 'mass', totals=include_holdups, steady_state = steady_raw)
+        # raw_materials = self.GetRawMaterials(
+        #     include_holdups, steady_raw, **kwargs_items.get('raw_materials',
+        #                                                     {}))
+
+        # raw_materials is already cutting off non-mass fields in get_holdup/get_raw_inlets  
+        selected_cols = raw_materials.columns[1:] 
         if raw_materials.size > 0:
             raw_cost = cost_raw * raw_materials[selected_cols]
         else:  
